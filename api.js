@@ -103,6 +103,41 @@ app.get('/api/health', async (req, res) => {
     res.status(500).json({ status: 'error' });
   }
 });
+// ============ OFERTAS ============
+
+app.post('/api/admin/offers', authMiddleware, async (req, res) => {
+  try {
+    const { product_id, name, quantity, price, discount_percent } = req.body;
+    const query = `
+      INSERT INTO product_offers (product_id, name, quantity, price, discount_percent)
+      VALUES ($1, $2, $3, $4, $5)
+      RETURNING *;
+    `;
+    const result = await db.pool.query(query, [product_id, name, quantity, price, discount_percent || 0]);
+    products.clearCache();
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/admin/offers', authMiddleware, async (req, res) => {
+  try {
+    const query = `
+      SELECT po.*, p.name as product_name, p.sku
+      FROM product_offers po
+      JOIN products p ON po.product_id = p.id
+      WHERE po.active = true 
+      ORDER BY p.sku, po.quantity;
+    `;
+    const result = await db.pool.query(query);
+    res.json(result.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ============ FIN OFERTAS ============
 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
