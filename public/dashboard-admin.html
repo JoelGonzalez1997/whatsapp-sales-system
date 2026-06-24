@@ -559,10 +559,17 @@
     });
 
     // AGREGAR OFERTA
-    document.getElementById('offerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const data = {
-        product_id: parseInt(document.getElementById('product_id').value),
+document.getElementById('offerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const productIdValue = document.getElementById('product_id').value;
+  if (!productIdValue) {
+    showMessage('offerMessage', '❌ Debes seleccionar un producto', 'error');
+    return;
+  }
+  
+  const data = {
+    product_id: parseInt(productIdValue),
         name: document.getElementById('offer_name').value,
         quantity: parseInt(document.getElementById('quantity').value),
         price: parseFloat(document.getElementById('price').value),
