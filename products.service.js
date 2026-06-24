@@ -6,10 +6,10 @@ class ProductsService {
     this.cache = new NodeCache({ stdTTL: 60 });
   }
 
-  async getAllProducts() {
+async getAllProducts() {
     const cacheKey = 'all_products';
-    const cached = this.cache.get(cacheKey);
-    if (cached) return cached;
+    // const cached = this.cache.get(cacheKey);
+    // if (cached) return cached;
 
     try {
       const query = 'SELECT * FROM products_with_offers ORDER BY name;';
