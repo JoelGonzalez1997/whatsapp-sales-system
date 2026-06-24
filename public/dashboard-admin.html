@@ -561,12 +561,14 @@
       }
     });
 
-    // AGREGAR OFERTA
+  // AGREGAR OFERTA
 document.getElementById('offerForm').addEventListener('submit', async (e) => {
   e.preventDefault();
   
   const productIdValue = document.getElementById('product_id').value;
-  if (!productIdValue) {
+  console.log('DEBUG - Product ID Value:', productIdValue, 'Type:', typeof productIdValue);
+  
+  if (!productIdValue || productIdValue === '') {
     showMessage('offerMessage', '❌ Debes seleccionar un producto', 'error');
     return;
   }
