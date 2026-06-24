@@ -108,8 +108,8 @@ app.get('/api/health', async (req, res) => {
 
 app.post('/api/admin/offers', authMiddleware, async (req, res) => {
   try {
-    const { product_id, name, quantity, price, discount_percent } = req.body;
-    const query = `
+    console.log('📝 Creando oferta con:', req.body);
+    const { product_id, name, quantity, price, discount_percent } = req.body;    const query = `
       INSERT INTO product_offers (product_id, name, quantity, price, discount_percent)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
@@ -117,7 +117,8 @@ app.post('/api/admin/offers', authMiddleware, async (req, res) => {
     const result = await db.pool.query(query, [product_id, name, quantity, price, discount_percent || 0]);
     products.clearCache();
     res.status(201).json(result.rows[0]);
-  } catch (error) {
+ } catch (error) {
+    console.error('❌ Error al crear oferta:', error);
     res.status(500).json({ error: error.message });
   }
 });
