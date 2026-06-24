@@ -12,6 +12,7 @@ const bot = new WhatsAppBot(process.env.ANTHROPIC_API_KEY, db, products);
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 const authMiddleware = (req, res, next) => {
   const token = req.headers['x-admin-token'];
