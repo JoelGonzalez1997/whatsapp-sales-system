@@ -12,7 +12,7 @@ class ProductsService {
     if (cached) return cached;
 
     try {
-      const query = 'SELECT * FROM products_with_offers WHERE active = true ORDER BY name;';
+      const query = 'SELECT * FROM products_with_offers ORDER BY name;';
       const result = await this.db.pool.query(query);
       this.cache.set(cacheKey, result.rows);
       return result.rows;
