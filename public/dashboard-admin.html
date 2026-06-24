@@ -447,16 +447,19 @@
 
     // CAMBIAR TABS
     function switchTab(tab) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-      
-      document.getElementById(tab).classList.add('active');
-      event.target.classList.add('active');
-      
-      if (tab === 'products' && products.length === 0) loadProducts();
-      if (tab === 'offers' && offers.length === 0) loadOffers();
-      if (tab === 'view') updateStats();
-    }
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  
+  document.getElementById(tab).classList.add('active');
+  event.target.classList.add('active');
+  
+  if (tab === 'products' && products.length === 0) loadProducts();
+  if (tab === 'offers') {
+    if (products.length === 0) loadProducts();
+    if (offers.length === 0) loadOffers();
+  }
+  if (tab === 'view') updateStats();
+}
 
     // CARGAR PRODUCTOS
     async function loadProducts() {
