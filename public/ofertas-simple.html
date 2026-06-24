@@ -117,11 +117,13 @@
         select.innerHTML = '<option value="">-- Selecciona un producto --</option>';
         
         products.forEach(p => {
-          const option = document.createElement('option');
-          option.value = p.id;
-          option.textContent = `${p.sku} - ${p.name}`;
-          select.appendChild(option);
-        });
+  const option = document.createElement('option');
+  option.value = String(p.id);
+  option.setAttribute('data-id', p.id);
+  option.textContent = `${p.sku} - ${p.name}`;
+  select.appendChild(option);
+  console.log('DEBUG - Producto agregado:', p.sku, 'ID:', p.id, 'Value:', option.value);
+});
       } catch (error) {
         console.error('Error cargando productos:', error);
         document.getElementById('productId').innerHTML = '<option value="">Error al cargar</option>';
@@ -138,10 +140,12 @@
       const price = document.getElementById('price').value;
       const discount = document.getElementById('discount').value || 0;
 
-      if (!productId) {
-        showMessage('❌ Debes seleccionar un producto', 'error');
-        return;
-      }
+      console.log('DEBUG - productId:', productId, 'Type:', typeof productId);
+
+if (!productId) {
+  showMessage('❌ Debes seleccionar un producto', 'error');
+  return;
+}
 
       const data = {
         product_id: parseInt(productId),
