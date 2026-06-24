@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crear Ofertas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #333;
+      text-align: center;
+    }
+    .info {
+      background: #e3f2fd;
+      padding: 15px;
+      border-radius: 4px;
+      margin-bottom: 20px;
+      color: #1976d2;
+      font-size: 14px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #333;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: #667eea;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #5568d3;
+    }
+    .message {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      text-align: center;
+      font-weight: bold;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🎁 Crear Nueva Oferta</h1>
+    
+    <div class="info">
+      ℹ️ Primero, asegúrate de tener al menos 1 producto en la BD (id debe ser 1, 2, 3, etc)
+    </div>
+
+    <form id="offerForm">
+      <label>ID del Producto (número) *</label>
+      <input type="number" id="productId" placeholder="ej: 1, 2, 3" required>
+
+      <label>Nombre de la Oferta *</label>
+      <input type="text" id="offerName" placeholder="ej: Pide 1, Oferta lleva 2" required>
+
+      <label>Cantidad *</label>
+      <input type="number" id="quantity" placeholder="ej: 2" required>
+
+      <label>Precio ($) *</label>
+      <input type="number" id="price" placeholder="ej: 29.99" step="0.01" required>
+
+      <label>Descuento (%) *</label>
+      <input type="number" id="discount" placeholder="ej: 30" value="0">
+
+      <button type="submit">✅ CREAR OFERTA</button>
+
+      <div id="message"></div>
+    </form>
+  </div>
+
+  <script>
+    const API = 'https://whatsapp-sales-system-production-358a.up.railway.app';
+    const TOKEN = 'token-super-secreto';
+
+    document.getElementById('offerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const productId = parseInt(document.getElementById('productId').value);
+      const offerName = document.getElementById('offerName').value;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const price = parseFloat(document.getElementById('price').value);
+      const discount = parseFloat(document.getElementById('discount').value) || 0;
+
+      console.log('Enviando:', { productId, offerName, quantity, price, discount });
+
+      const data = {
+        product_id: productId,
+        name: offerName,
+        quantity: quantity,
+        price: price,
+        discount_percent: discount
+      };
+
+      try {
+        const response = await fetch(`${API}/api/admin/offers`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Admin-Token': TOKEN
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        console.log('Response:', result);
+
+        if (!response.ok) {
+          throw new Error(result.error || 'Error al crear oferta');
+        }
+
+        showMessage('✅ ¡Oferta creada correctamente!', 'success');
+        document.getElementById('offerForm').reset();
+      } catch (error) {
+        console.error('Error:', error);
+        showMessage('❌ Error: ' + error.message, 'error');
+      }
+    });
+
+    function showMessage(text, type) {
+      const msg = document.getElementById('message');
+      msg.textContent = text;
+      msg.className = 'message ' + type;
+    }
+  </script>
+</body>
+</html>
