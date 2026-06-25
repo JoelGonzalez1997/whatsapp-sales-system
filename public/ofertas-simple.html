@@ -79,10 +79,17 @@
   <form id="offerForm">
     <h1>🎁 Crear Nueva Oferta</h1>
     
-    <label>Selecciona Producto *</label>
-    <select id="productId" required>
-      <option value="">Cargando productos...</option>
-    </select>
+    <div style="background: #e3f2fd; padding: 15px; border-radius: 4px; margin-bottom: 20px; color: #1976d2;">
+      <strong>Productos disponibles:</strong><br>
+      • ID 1: ORE-001 - Cápsulas Oil of Oregano<br>
+      • ID 2: 001 - SOPORTE DE LAVADORA<br>
+      • ID 3: MIS-001 - SOPORTE DE LAVADORA MOVIL<br>
+      • ID 4: MIS-001 - SOPORTE DE LAVADORA MOVIL (Pide 1)<br>
+      • ID 5: LAV-001 - SOPORTE DE LAVADORA
+    </div>
+
+    <label>ID del Producto (número) *</label>
+    <input type="number" id="productId" placeholder="ej: 1, 2, 3" required>
 
     <label>Nombre de la Oferta *</label>
     <input type="text" id="offerName" placeholder="ej: Pide 1, Oferta lleva 2" required>
@@ -105,59 +112,31 @@
     const API = 'https://whatsapp-sales-system-production-358a.up.railway.app';
     const TOKEN = 'token-super-secreto';
 
-    // Cargar productos
-    async function loadProducts() {
-      try {
-        const response = await fetch(`${API}/api/admin/products`, {
-          headers: { 'X-Admin-Token': TOKEN }
-        });
-        const products = await response.json();
-        
-        const select = document.getElementById('productId');
-        select.innerHTML = '<option value="">-- Selecciona un producto --</option>';
-        
-console.log('Total productos cargados:', products.length);
-products.forEach(p => {  const option = document.createElement('option');
-  option.value = String(p.product_id);
-  option.setAttribute('data-id', p.id);
-  option.textContent = `${p.sku} - ${p.name}`;
-  select.appendChild(option);
-  console.log('DEBUG - Producto agregado:', p.sku, 'ID:', p.id, 'Value:', option.value);
-});
-      } catch (error) {
-        console.error('Error cargando productos:', error);
-        document.getElementById('productId').innerHTML = '<option value="">Error al cargar</option>';
-      }
-    }
+    document.getElementById('offerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
 
-    // Crear oferta
-document.getElementById('offerForm').addEventListener('submit', async (e) => {
-  e.preventDefault();
-
-  const selectElement = document.getElementById('productId');
-  const productId = selectElement.options[selectElement.selectedIndex].value;
-  console.log('SELECT DEBUG - selectedIndex:', selectElement.selectedIndex, 'value:', productId);
+      const productId = parseInt(document.getElementById('productId').value);
       const offerName = document.getElementById('offerName').value;
-      const quantity = document.getElementById('quantity').value;
-      const price = document.getElementById('price').value;
-      const discount = document.getElementById('discount').value || 0;
+      const quantity = parseInt(document.getElementById('quantity').value);
+      const price = parseFloat(document.getElementById('price').value);
+      const discount = parseFloat(document.getElementById('discount').value) || 0;
 
-      console.log('DEBUG - productId:', productId, 'Type:', typeof productId);
+      console.log('Enviando:', { productId, offerName, quantity, price, discount });
 
-if (!productId) {
-  showMessage('❌ Debes seleccionar un producto', 'error');
-  return;
-}
+      if (!productId || isNaN(productId)) {
+        showMessage('❌ ID del producto debe ser un número válido', 'error');
+        return;
+      }
 
       const data = {
-        product_id: parseInt(productId),
+        product_id: productId,
         name: offerName,
-        quantity: parseInt(quantity),
-        price: parseFloat(price),
-        discount_percent: parseFloat(discount)
+        quantity: quantity,
+        price: price,
+        discount_percent: discount
       };
 
-      console.log('Enviando datos:', data);
+      console.log('JSON a enviar:', JSON.stringify(data));
 
       try {
         const response = await fetch(`${API}/api/admin/offers`, {
@@ -170,6 +149,7 @@ if (!productId) {
         });
 
         const result = await response.json();
+        console.log('Respuesta:', result);
 
         if (!response.ok) {
           throw new Error(result.error || 'Error al crear oferta');
@@ -178,7 +158,7 @@ if (!productId) {
         showMessage('✅ ¡Oferta creada correctamente!', 'success');
         document.getElementById('offerForm').reset();
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error completo:', error);
         showMessage('❌ Error: ' + error.message, 'error');
       }
     });
@@ -188,9 +168,6 @@ if (!productId) {
       msg.textContent = text;
       msg.className = 'message ' + type;
     }
-
-    // Cargar productos al inicio
-    loadProducts();
   </script>
 </body>
 </html>
