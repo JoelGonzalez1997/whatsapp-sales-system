@@ -109,7 +109,14 @@ app.get('/api/health', async (req, res) => {
 app.post('/api/admin/offers', authMiddleware, async (req, res) => {
   try {
     console.log('📝 Creando oferta con:', req.body);
-    const { product_id, name, quantity, price, discount_percent } = req.body;    const query = `
+    let { product_id, name, quantity, price, discount_percent } = req.body;
+product_id = parseInt(product_id);
+name = String(name).trim();
+quantity = parseInt(quantity);
+price = parseFloat(price);
+discount_percent = parseFloat(discount_percent) || 0;
+
+console.log('📝 Después de convertir:', { product_id, name, quantity, price, discount_percent });    const query = `
       INSERT INTO product_offers (product_id, name, quantity, price, discount_percent)
       VALUES ($1, $2, $3, $4, $5)
       RETURNING *;
