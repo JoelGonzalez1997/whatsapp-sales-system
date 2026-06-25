@@ -116,9 +116,9 @@
         const select = document.getElementById('productId');
         select.innerHTML = '<option value="">-- Selecciona un producto --</option>';
         
-        products.forEach(p => {
-  const option = document.createElement('option');
-  option.value = String(p.id);
+console.log('Total productos cargados:', products.length);
+products.forEach(p => {  const option = document.createElement('option');
+  option.value = String(p.product_id);
   option.setAttribute('data-id', p.id);
   option.textContent = `${p.sku} - ${p.name}`;
   select.appendChild(option);
@@ -131,10 +131,12 @@
     }
 
     // Crear oferta
-    document.getElementById('offerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
+document.getElementById('offerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
 
-      const productId = document.getElementById('productId').value;
+  const selectElement = document.getElementById('productId');
+  const productId = selectElement.options[selectElement.selectedIndex].value;
+  console.log('SELECT DEBUG - selectedIndex:', selectElement.selectedIndex, 'value:', productId);
       const offerName = document.getElementById('offerName').value;
       const quantity = document.getElementById('quantity').value;
       const price = document.getElementById('price').value;
